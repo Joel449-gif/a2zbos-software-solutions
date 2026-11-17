@@ -1,13 +1,29 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
-import { AlertTriangle, Check, Copy, Loader2, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import {
+  AlertTriangle,
+  Check,
+  Copy,
+  Loader2,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+} from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { ButtonArrow } from "@/components/site/ArrowLink";
 import { Reveal } from "@/components/site/Reveal";
 import { Container, PageHero } from "@/components/site/Section";
-import { isPlaceholder, site, whatsappConfigured, whatsappLink } from "@/config/site";
+import {
+  isPlaceholder,
+  site,
+  whatsappConfigured,
+  whatsappLink,
+  emailLink,
+  phoneLink,
+} from "@/config/site";
 import {
   ENQUIRY_DELIVERY_CONNECTED,
   enquirySchema,
@@ -33,7 +49,9 @@ export const Route = createFileRoute("/contact")({
   validateSearch: (search: Record<string, unknown>): ContactSearch => ({
     interest: isInterest(search.interest) ? search.interest : undefined,
     product:
-      typeof search.product === "string" && search.product.length <= 60 ? search.product : undefined,
+      typeof search.product === "string" && search.product.length <= 60
+        ? search.product
+        : undefined,
   }),
   head: () => ({
     meta: [
@@ -66,9 +84,14 @@ function Field({
 }) {
   return (
     <div>
-      <label htmlFor={htmlFor} className="mb-2 flex items-baseline justify-between text-sm font-medium">
+      <label
+        htmlFor={htmlFor}
+        className="mb-2 flex items-baseline justify-between text-sm font-medium"
+      >
         {label}
-        {optional ? <span className="text-xs font-normal text-muted-foreground">Optional</span> : null}
+        {optional ? (
+          <span className="text-xs font-normal text-muted-foreground">Optional</span>
+        ) : null}
       </label>
       {children}
       {error ? (
@@ -123,9 +146,10 @@ function ContactPage() {
   };
 
   const contactRows = [
-    { icon: Mail, label: "Email", value: site.contact.email },
-    { icon: Phone, label: "Phone", value: site.contact.phone },
-    { icon: MapPin, label: "Office", value: site.contact.address },
+    { icon: Mail, label: "Email", value: site.contact.email, href: emailLink() },
+    { icon: Phone, label: "Phone", value: site.contact.phone, href: phoneLink() },
+    { icon: MapPin, label: "Head office", value: site.contact.headOffice },
+    { icon: MapPin, label: "Branch office", value: site.contact.branchOffice },
   ];
 
   const waGeneral = whatsappLink("Hello A2ZBOS, I'd like to know more about your solutions.");
@@ -154,7 +178,9 @@ function ContactPage() {
                       <span className="flex size-12 items-center justify-center rounded-full bg-signal">
                         <Check className="size-6 text-signal-foreground" />
                       </span>
-                      <h2 className="text-title mt-6">Thank you, {outcome.enquiry.name.split(" ")[0]}.</h2>
+                      <h2 className="text-title mt-6">
+                        Thank you, {outcome.enquiry.name.split(" ")[0]}.
+                      </h2>
                       <p className="mt-3 text-muted-foreground">Your enquiry has been received.</p>
                     </>
                   ) : (
@@ -164,8 +190,8 @@ function ContactPage() {
                       </span>
                       <h2 className="text-title mt-6">Your enquiry wasn't sent.</h2>
                       <p className="mt-3 leading-relaxed text-muted-foreground">
-                        Online enquiries aren't connected yet, so nothing was delivered. Please send your details
-                        another way — your message is ready to copy below.
+                        Online enquiries aren't connected yet, so nothing was delivered. Please send
+                        your details another way — your message is ready to copy below.
                       </p>
                       <pre className="mt-6 max-h-56 overflow-auto rounded-md border bg-secondary p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap">
                         {formatEnquiry(outcome.enquiry)}
@@ -176,7 +202,11 @@ function ContactPage() {
                         </Button>
                         {whatsappLink(formatEnquiry(outcome.enquiry)) ? (
                           <Button asChild variant="line" size="xl">
-                            <a href={whatsappLink(formatEnquiry(outcome.enquiry)) ?? undefined} target="_blank" rel="noopener noreferrer">
+                            <a
+                              href={whatsappLink(formatEnquiry(outcome.enquiry)) ?? undefined}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
                               <MessageCircle /> Send on WhatsApp
                             </a>
                           </Button>
@@ -199,30 +229,80 @@ function ContactPage() {
                 <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
                   <div>
                     <h2 className="text-title">Send an enquiry</h2>
-                    <p className="mt-2 text-sm text-muted-foreground">Fields marked optional can be left blank.</p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Fields marked optional can be left blank.
+                    </p>
                   </div>
 
                   <div className="grid gap-6 sm:grid-cols-2">
                     <Field label="Name" htmlFor={`${id}-name`} error={errors.name?.message}>
-                      <input id={`${id}-name`} autoComplete="name" className={fieldBase} aria-invalid={!!errors.name} aria-describedby={describedBy("name")} {...register("name")} />
+                      <input
+                        id={`${id}-name`}
+                        autoComplete="name"
+                        className={fieldBase}
+                        aria-invalid={!!errors.name}
+                        aria-describedby={describedBy("name")}
+                        {...register("name")}
+                      />
                     </Field>
-                    <Field label="Business name" optional htmlFor={`${id}-businessName`} error={errors.businessName?.message}>
-                      <input id={`${id}-businessName`} autoComplete="organization" className={fieldBase} aria-invalid={!!errors.businessName} aria-describedby={describedBy("businessName")} {...register("businessName")} />
+                    <Field
+                      label="Business name"
+                      optional
+                      htmlFor={`${id}-businessName`}
+                      error={errors.businessName?.message}
+                    >
+                      <input
+                        id={`${id}-businessName`}
+                        autoComplete="organization"
+                        className={fieldBase}
+                        aria-invalid={!!errors.businessName}
+                        aria-describedby={describedBy("businessName")}
+                        {...register("businessName")}
+                      />
                     </Field>
                     <Field label="Email" htmlFor={`${id}-email`} error={errors.email?.message}>
-                      <input id={`${id}-email`} type="email" autoComplete="email" className={fieldBase} aria-invalid={!!errors.email} aria-describedby={describedBy("email")} {...register("email")} />
+                      <input
+                        id={`${id}-email`}
+                        type="email"
+                        autoComplete="email"
+                        className={fieldBase}
+                        aria-invalid={!!errors.email}
+                        aria-describedby={describedBy("email")}
+                        {...register("email")}
+                      />
                     </Field>
-                    <Field label="Phone number" htmlFor={`${id}-phone`} error={errors.phone?.message}>
-                      <input id={`${id}-phone`} type="tel" autoComplete="tel" inputMode="tel" className={fieldBase} aria-invalid={!!errors.phone} aria-describedby={describedBy("phone")} {...register("phone")} />
+                    <Field
+                      label="Phone number"
+                      htmlFor={`${id}-phone`}
+                      error={errors.phone?.message}
+                    >
+                      <input
+                        id={`${id}-phone`}
+                        type="tel"
+                        autoComplete="tel"
+                        inputMode="tel"
+                        className={fieldBase}
+                        aria-invalid={!!errors.phone}
+                        aria-describedby={describedBy("phone")}
+                        {...register("phone")}
+                      />
                     </Field>
                   </div>
 
                   <fieldset>
                     <legend className="mb-3 text-sm font-medium">Area of interest</legend>
-                    <div className="flex flex-wrap gap-2" aria-describedby={describedBy("interest")}>
+                    <div
+                      className="flex flex-wrap gap-2"
+                      aria-describedby={describedBy("interest")}
+                    >
                       {interestOptions.map((o) => (
                         <label key={o.value} className="cursor-pointer">
-                          <input type="radio" value={o.value} className="peer sr-only" {...register("interest")} />
+                          <input
+                            type="radio"
+                            value={o.value}
+                            className="peer sr-only"
+                            {...register("interest")}
+                          />
                           <span className="block rounded-full border border-input px-4 py-2 text-sm transition-colors peer-checked:border-foreground peer-checked:bg-foreground peer-checked:text-background peer-focus-visible:ring-2 peer-focus-visible:ring-signal hover:border-foreground/40">
                             {o.label}
                           </span>
@@ -230,27 +310,46 @@ function ContactPage() {
                       ))}
                     </div>
                     {errors.interest ? (
-                      <p id={`${id}-interest-error`} role="alert" className="mt-2 text-xs text-destructive">
+                      <p
+                        id={`${id}-interest-error`}
+                        role="alert"
+                        className="mt-2 text-xs text-destructive"
+                      >
                         {errors.interest.message}
                       </p>
                     ) : null}
                   </fieldset>
 
                   <Field label="Message" htmlFor={`${id}-message`} error={errors.message?.message}>
-                    <textarea id={`${id}-message`} rows={5} className={cn(fieldBase, "resize-y")} placeholder="Tell us about your business and what you're looking for." aria-invalid={!!errors.message} aria-describedby={describedBy("message")} {...register("message")} />
+                    <textarea
+                      id={`${id}-message`}
+                      rows={5}
+                      className={cn(fieldBase, "resize-y")}
+                      placeholder="Tell us about your business and what you're looking for."
+                      aria-invalid={!!errors.message}
+                      aria-describedby={describedBy("message")}
+                      {...register("message")}
+                    />
                   </Field>
 
                   {!ENQUIRY_DELIVERY_CONNECTED ? (
                     <p className="flex items-start gap-2 rounded-md border border-dashed border-area-business bg-area-business/10 p-3 text-xs leading-relaxed">
                       <AlertTriangle className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
                       <span>
-                        <strong className="font-semibold">Setup pending:</strong> online delivery for this form
-                        isn't connected yet. Submitting checks your details and prepares your message to send another way.
+                        <strong className="font-semibold">Setup pending:</strong> online delivery
+                        for this form isn't connected yet. Submitting checks your details and
+                        prepares your message to send another way.
                       </span>
                     </p>
                   ) : null}
 
-                  <Button type="submit" variant="ink" size="xl" className="w-full sm:w-auto" disabled={isSubmitting}>
+                  <Button
+                    type="submit"
+                    variant="ink"
+                    size="xl"
+                    className="w-full sm:w-auto"
+                    disabled={isSubmitting}
+                  >
                     {isSubmitting ? <Loader2 className="animate-spin" /> : null}
                     Start a Conversation <ButtonArrow />
                   </Button>
@@ -262,12 +361,17 @@ function ContactPage() {
           {/* SIDE PANEL */}
           <div className="space-y-6 lg:col-span-5">
             <Reveal delay={100} className="surface-ink relative overflow-hidden rounded-xl p-8">
-              <div aria-hidden="true" className="absolute -top-24 -right-24 size-64 rounded-full bg-signal/15 blur-3xl" />
+              <div
+                aria-hidden="true"
+                className="absolute -top-24 -right-24 size-64 rounded-full bg-signal/15 blur-3xl"
+              />
               <span className="relative flex size-11 items-center justify-center rounded-md bg-signal">
                 <MessageCircle className="size-5 text-signal-foreground" />
               </span>
               <h2 className="text-title relative mt-6">Prefer WhatsApp?</h2>
-              <p className="relative mt-3 text-ink-muted">Message our team directly for a quick conversation.</p>
+              <p className="relative mt-3 text-ink-muted">
+                Message our team directly for a quick conversation.
+              </p>
               {waGeneral ? (
                 <Button asChild variant="signal" size="xl" className="relative mt-8 w-full">
                   <a href={waGeneral} target="_blank" rel="noopener noreferrer">
@@ -276,7 +380,13 @@ function ContactPage() {
                 </Button>
               ) : (
                 <>
-                  <Button type="button" variant="glass" size="xl" className="relative mt-8 w-full" disabled>
+                  <Button
+                    type="button"
+                    variant="glass"
+                    size="xl"
+                    className="relative mt-8 w-full"
+                    disabled
+                  >
                     Chat on WhatsApp
                   </Button>
                   <p className="relative mt-3 font-mono text-[0.68rem] text-ink-muted">
@@ -296,9 +406,22 @@ function ContactPage() {
                     </span>
                     <span>
                       <span className="block text-xs text-muted-foreground">{row.label}</span>
-                      <span className={cn("block", isPlaceholder(row.value) ? "font-mono text-sm text-muted-foreground" : "font-medium")}>
-                        {row.value}
-                      </span>
+                      {row.href ? (
+                        <a href={row.href} className="link-underline block font-medium">
+                          {row.value}
+                        </a>
+                      ) : (
+                        <span
+                          className={cn(
+                            "block",
+                            isPlaceholder(row.value)
+                              ? "font-mono text-sm text-muted-foreground"
+                              : "font-medium",
+                          )}
+                        >
+                          {row.value}
+                        </span>
+                      )}
                     </span>
                   </li>
                 ))}

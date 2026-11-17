@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { navItems, site, isPlaceholder } from "@/config/site";
+import { navItems, site, isPlaceholder, emailLink, phoneLink } from "@/config/site";
 import { solutions } from "@/data/solutions";
 import { Container } from "./Section";
 import { Logo } from "./Logo";
@@ -8,9 +8,10 @@ import { cn } from "@/lib/utils";
 export function Footer() {
   const year = new Date().getFullYear();
   const contactRows = [
-    { label: "Email", value: site.contact.email },
-    { label: "Phone", value: site.contact.phone },
-    { label: "Address", value: site.contact.address },
+    { label: "Email", value: site.contact.email, href: emailLink() },
+    { label: "Phone", value: site.contact.phone, href: phoneLink() },
+    { label: "Head office", value: site.contact.headOffice },
+    { label: "Branch", value: site.contact.branchOffice },
   ];
 
   return (
@@ -30,7 +31,10 @@ export function Footer() {
             <ul className="mt-5 space-y-3 text-sm">
               {navItems.map((item) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="link-underline text-ink-foreground/85 hover:text-ink-foreground">
+                  <Link
+                    to={item.to}
+                    className="link-underline text-ink-foreground/85 hover:text-ink-foreground"
+                  >
                     {item.label}
                   </Link>
                 </li>
@@ -61,8 +65,20 @@ export function Footer() {
               {contactRows.map((row) => (
                 <div key={row.label} className="flex gap-3">
                   <dt className="w-16 shrink-0 text-ink-muted">{row.label}</dt>
-                  <dd className={cn(isPlaceholder(row.value) ? "font-mono text-xs text-ink-muted/80" : "text-ink-foreground/85")}>
-                    {row.value}
+                  <dd
+                    className={cn(
+                      isPlaceholder(row.value)
+                        ? "font-mono text-xs text-ink-muted/80"
+                        : "text-ink-foreground/85",
+                    )}
+                  >
+                    {row.href ? (
+                      <a href={row.href} className="link-underline">
+                        {row.value}
+                      </a>
+                    ) : (
+                      row.value
+                    )}
                   </dd>
                 </div>
               ))}
@@ -81,9 +97,7 @@ export function Footer() {
           <p>
             © {year} {site.name} · A division of {site.parent}.
           </p>
-          <p>
-            myBillBook is a third-party product and a trademark of its respective owner.
-          </p>
+          <p>myBillBook is a third-party product and a trademark of its respective owner.</p>
         </div>
       </Container>
     </footer>
